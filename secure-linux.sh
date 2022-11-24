@@ -192,7 +192,7 @@ function initial_checks() {
     @info_message_box "INITIAL CHECKS"
 
     # script must be run as root
-    if [[ $(id -u) -ne 0 ]] ; then printf "\n${red} Please run as root${RESTORE}\n\n" ; exit 1 ; fi
+    # if [[ $(id -u) -ne 0 ]] ; then printf "\n${red} Please run as root${RESTORE}\n\n" ; exit 1 ; fi
 
     if [ ! -e /root/.ssh/authorized_keys ]; then
         echo -e -n "${red}"
