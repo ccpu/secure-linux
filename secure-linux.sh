@@ -378,7 +378,7 @@ function collect_sshd() {
     @backup_file $SSHDFILE
     @press_enter_continue
 
-    @set_sshd_config Port $SSHPORT
+    @set_sshd_config $SSHDFILE Port $SSHPORT
 
     # Error Handling
     if [ $? -eq 0 ]
