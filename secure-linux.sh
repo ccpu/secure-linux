@@ -177,8 +177,6 @@ function begin_log() {
     then
         return 0;
     else
-        @warning_message_box "Unable to find '$FILE_PATH' file, The process has been cancelled."
-        @press_enter_continue
         return 1
     fi
 }
@@ -231,6 +229,11 @@ function initial_checks() {
 
     # script must be run as root
     if [[ $(id -u) -ne 0 ]] ; then printf "\n${red} Please run as root${RESTORE}\n\n" ; exit 1 ; fi
+
+    if ! @is_valid_path $SSHDFILE ;then
+        @error_message_box "Unable to find '$SSHDFILE' file!"
+        exit 1
+    fi
 
     if [ ! -e /root/.ssh/authorized_keys ]; then
         echo -e -n "${red}"
@@ -357,10 +360,6 @@ function collect_sshd() {
     echo -e " scanning port 22 for vulnerabilities. If you change your server to"
     echo -e " use a different port, you gain some security through obscurity.\n"
 
-    if ! @is_valid_path $SSHDFILE ;then
-        return 0
-    fi
-
     while :; do
         echo -e -n "${cyan}"
         read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
@@ -407,6 +406,8 @@ function remove_short_diffie_hellman_keys(){
     echo -e -n "${nocolor}"
 
     if ! @is_valid_path /etc/ssh/moduli  ;then
+        @warning_message_box "Unable to find '/etc/ssh/moduli' file, The process has been cancelled."
+        @press_enter_continue
         clear
         return 0
     fi
@@ -783,6 +784,8 @@ xx
     FILE_51MYUNATTENDED_PATH="/etc/apt/apt.conf.d/51myunattended-upgrades"
 
     if ! @is_valid_path /etc/apt/apt.conf.d; then
+        @warning_message_box "Unable to find '/etc/apt/apt.conf.d' file, The process has been cancelled."
+        @press_enter_continue
         return 0
     fi
 
