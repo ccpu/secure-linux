@@ -543,7 +543,7 @@ function set_ntp_client(){
                 echo -e "\npool pool.ntp.org iburst         # added by $(whoami) on $(date +"%Y-%m-%d @ %H:%M:%S")" | sudo tee -a /etc/ntp.conf
 
                 service ntp restart
-                systemctl status ntp
+                service ntp status | cat
                 @spinner 4
                 @sucess_message_box "NTP Client Installed."
                 NTP_INSTALLED='yes'
