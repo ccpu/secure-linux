@@ -232,6 +232,7 @@ function initial_checks() {
 
     if ! @is_valid_path $SSHDFILE ;then
         @error_message_box "Unable to find '$SSHDFILE' file!"
+        echo "Ensure that SSH is configured and running, and try again."
         exit 1
     fi
 
