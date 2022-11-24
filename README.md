@@ -25,3 +25,9 @@ Additionally, there are some additional files you can modify to suit your needs.
 ### SSH Configuration
 
 /etc/ssh/sshd_config
+
+## Start script
+
+```
+sudo apt-get update && sudo apt-get install wget && sudo wget -O - https://raw.githubusercontent.com/ccpu/secure-linux/main/secure-linux.sh | bash
+```

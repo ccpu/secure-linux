@@ -194,7 +194,7 @@ function initial_checks() {
     # script must be run as root
     if [[ $(id -u) -ne 0 ]] ; then printf "\n${red} Please run as root${RESTORE}\n\n" ; exit 1 ; fi
 
-    if [ ! -e root/.ssh/authorized_keys ]; then
+    if [ ! -e /root/.ssh/authorized_keys ]; then
         echo -e -n "${red}"
         echo "The authorized_keys file could not be found."
         echo "Look like SSH Key has not been set."
