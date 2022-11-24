@@ -534,7 +534,7 @@ function set_ntp_client(){
 
         if @confirm "Would you like setup NTP client?" ;then
             echo -e 'apt-get install ntp'  | tee -a "$LOGFILE"
-            apt-get install ntp -qqy >> $LOGFILE 2>&1
+            apt-get install ntp -y >> $LOGFILE 2>&1
             if [ -e /etc/ntp.conf ]
             then
                 @backup_file /etc/ntp.conf
@@ -589,18 +589,24 @@ function ufw_config() {
     then
         echo -e -n "${nocolor}"
         # make sure ufw is installed #
-        apt-get install ufw -qqy >> $LOGFILE 2>&1
+        apt-get install ufw -y >> $LOGFILE 2>&1
         # add firewall rules
 
         ufw default allow outgoing >> $LOGFILE 2>&1
         ufw default deny incoming >> $LOGFILE 2>&1
 
         echo -e 'allow ssh'  | tee -a "$LOGFILE"
-        ufw limit in ssh comment 'allow ssh out'
+        ufw allow "$SSHPORT" | tee -a "$LOGFILE"
 
         # allow traffic out on port 53 -- DNS
         echo -e 'allow DNS calls out'  | tee -a "$LOGFILE"
         ufw allow out 53 comment 'allow DNS calls out'
+
+        echo -e 'allow HTTP traffic out'  | tee -a "$LOGFILE"
+        sudo ufw allow out http comment 'allow HTTP traffic out'
+
+        echo -e 'allow HTTPS traffic out'  | tee -a "$LOGFILE"
+        sudo ufw allow out https comment 'allow HTTPS traffic out'
 
         # allow traffic out on port 123 -- NTP
         if [ $NTP_INSTALLED == 'yes' ] ;then
@@ -609,24 +615,6 @@ function ufw_config() {
         else
             echo -e 'deny NTP out'  | tee -a "$LOGFILE"
             sudo ufw deny out 123 comment 'allow NTP out'
-        fi
-
-        # allow traffic out for HTTP, HTTPS, or FTP
-        # apt might needs these depending on which sources you're using
-        if @confirm "Allow HTTP" ;then
-            echo -e 'allow HTTP traffic out'  | tee -a "$LOGFILE"
-            sudo ufw allow out http comment 'allow HTTP traffic out'
-        else
-            echo -e 'deny HTTP traffic out'  | tee -a "$LOGFILE"
-            sudo ufw deny out http comment 'allow HTTP traffic out'
-        fi
-
-        if @confirm "Allow HTTPS" ;then
-            echo -e 'allow HTTPS traffic out'  | tee -a "$LOGFILE"
-            sudo ufw allow out https comment 'allow HTTPS traffic out'
-        else
-            echo -e 'deny HTTPS traffic out'  | tee -a "$LOGFILE"
-            sudo ufw deny out https comment 'allow HTTPS traffic out'
         fi
 
         if @confirm "Allow ftp" ;then
