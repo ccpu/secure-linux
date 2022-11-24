@@ -376,8 +376,6 @@ function collect_sshd() {
     done
     # Take a backup of the existing config
     @backup_file $SSHDFILE
-    @press_enter_continue
-
     @set_sshd_config $SSHDFILE Port $SSHPORT
 
     # Error Handling
