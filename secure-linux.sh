@@ -349,7 +349,7 @@ function add_user() {
 function collect_sshd() {
     # Prompt for custom SSH port between 11000 and 65535
     echo -e -n "${nocolor}"
-    SSHPORTWAS=$(sed -n -e '/Port /p' $SSHDFILE)
+    SSHPORTWAS=$(sed -n -e '/^Port /p' $SSHDFILE)
 
     @info_message_box "CONFIGURE SSH SETTINGS"
     echo -e -n "${orange}"
@@ -485,7 +485,7 @@ function disable_passauth() {
     echo -e " than just using a password. If you have installed an RSA key-pair"
     echo -e " and use that to login, you should disable password authentication.\n"
     echo -e "${nocolor}"
-    PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
+    PASSWDAUTH=$(sed -n -e '/^PasswordAuthentication /p' $SSHDFILE)
     if [ -e /root/.ssh/authorized_keys ]
     then
         echo -e -n "${yellow}"
@@ -512,7 +512,7 @@ function disable_passauth() {
         @warning_message_box "With no RSA key; I can't disable PasswordAuthentication."
         @spinner 5
     fi
-    PASSWDAUTH=$(sed -n -e '/PasswordAuthentication /p' $SSHDFILE)
+    PASSWDAUTH=$(sed -n -e '/^PasswordAuthentication /p' $SSHDFILE)
     @info_message "Your PasswordAuthentication settings are now ** $PASSWDAUTH **"
     @sucess_message_box "PASSWORD AUTHENTICATION COMPLETE"
     @spinner 5
