@@ -185,7 +185,45 @@ function begin_log() {
 
 @backup_file(){
     cp --archive $*  $*-COPY-$(date +"%Y%m%d%H%M%S") >> $LOGFILE 2>&1
-    @info_message "SSH config file backed up to : $*-COPY-$(date +"%Y%m%d%H%M%S")" | tee -a "$LOGFILE"
+    @info_message "$* file backup location : $*-COPY-$(date +"%Y%m%d%H%M%S")" | tee -a "$LOGFILE"
+}
+
+@is_line_begin_with(){
+    FILE_PATH=$1
+    VALUE=$2
+
+    if grep -wq "^${VALUE}" $FILE_PATH
+    then
+        return 0;
+    else
+        return 1
+    fi
+}
+
+@set_sshd_config(){
+    FILE_PATH=$1
+    NAME=$2
+
+    if @is_line_begin_with $FILE_PATH "$NAME $3";then
+        return 0;
+    fi
+
+    if @is_line_begin_with $FILE_PATH "$NAME";then
+        sed -i "s/^$NAME .*/$NAME $3/" $SSHDFILE >> $LOGFILE
+        return 0;
+    fi
+
+    if @is_line_begin_with $FILE_PATH "# $NAME";then
+        sed -i "s/^# $NAME .*/$NAME $3/" $SSHDFILE >> $LOGFILE
+        return 0;
+    fi
+
+    if @is_line_begin_with $FILE_PATH "#$NAME";then
+        sed -i "s/^#$NAME .*/$NAME $3/" $SSHDFILE >> $LOGFILE
+        return 0;
+    fi
+
+    echo "$NAME $3" >> $SSHDFILE
 }
 
 function initial_checks() {
@@ -340,7 +378,7 @@ function collect_sshd() {
     @backup_file $SSHDFILE
     @press_enter_continue
 
-    sed -i "s/$SSHPORTWAS/Port $SSHPORT/" $SSHDFILE >> $LOGFILE 2>&1
+    @set_sshd_config Port $SSHPORT
 
     # Error Handling
     if [ $? -eq 0 ]
@@ -404,7 +442,7 @@ function prompt_rootlogin {
         # check if ROOTLOGIN is valid
         if @confirm 'Would you like to disable root login?' ; then
             # search for root login and change to no
-            sed -i "s/.*PermitRootLogin.*/PermitRootLogin no/" $SSHDFILE >> $LOGFILE
+            @set_sshd_config $SSHDFILE PermitRootLogin no
             # Error Handling
             if [ $? -eq 0 ]
             then
@@ -415,7 +453,8 @@ function prompt_rootlogin {
                 @spinner 8
             fi
         else
-            sed -i "s/.*PermitRootLogin.*/PermitRootLogin yes/" $SSHDFILE >> $LOGFILE 2>&1
+            @set_sshd_config $SSHDFILE PermitRootLogin yes
+
             if [ $? -eq 0 ]
             then
                 @sucess_message_box "SUCCESS : Root login enabled"
@@ -455,9 +494,8 @@ function disable_passauth() {
 
         # check if PASSLOGIN is valid
         if @confirm 'Would you like to disable password login & require RSA key login?' ; then
-            sed -i "s/PasswordAuthentication .*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-            sed -i "s/#PasswordAuthentication .*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-            sed -i "s/# PasswordAuthentication .*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+
+            @set_sshd_config $SSHDFILE PasswordAuthentication no
 
             # Error Handling
             if [ $? -eq 0 ]
@@ -468,9 +506,7 @@ function disable_passauth() {
             fi
             @spinner 4
         else
-            sed -i "s/PasswordAuthentication .*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
-            sed -i "s/#PasswordAuthentication .*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
-            sed -i "s/# PasswordAuthentication .*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
+            @set_sshd_config $SSHDFILE PasswordAuthentication yes
         fi
     else
         @warning_message_box "With no RSA key; I can't disable PasswordAuthentication."
