@@ -1,6 +1,7 @@
 # secure-linux
 
 Implements some of the best practices form https://github.com/imthenachoman/How-To-Secure-A-Linux-Server
+Some script has been taken from https://github.com/akcryptoguy/vps-harden/blob/master/get-hard.sh
 
 ## (Optional) Post-Installation Hardening with RSA Key-pair
 
@@ -22,16 +23,12 @@ You will once more need to run `sudo systemctl restart sshd` to make those chang
 
 Additionally, there are some additional files you can modify to suit your needs. I have listed a few of these files below along with why you might consider editing them.
 
-### SSH Configuration
-
-/etc/ssh/sshd_config
-
 ## Start script
 
 ```
 
 sudo apt-get update && sudo apt-get install curl &&
 curl -sf -L https://raw.githubusercontent.com/ccpu/secure-linux/main/secure-linux.sh -o secure-linux.sh &&
-chmod +x secure-linux.sh && sudo ./secure-linux.sh && rm secure-linux.sh
+chmod +x secure-linux.sh && sudo ./secure-linux.sh && sudo rm secure-linux.sh
 
 ```
