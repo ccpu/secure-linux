@@ -1,7 +1,8 @@
 # secure-linux
 
-Implements some of the best practices form https://github.com/imthenachoman/How-To-Secure-A-Linux-Server
-Some script has been taken from https://github.com/akcryptoguy/vps-harden/blob/master/get-hard.sh
+Adapts some best practices from https://github.com/imthenachoman/How-To-Secure-A-Linux-Server
+
+Some scripts have been taken from https://github.com/akcryptoguy/vps-harden/blob/master/get-hard.sh
 
 ## (Optional) Post-Installation Hardening with RSA Key-pair
 
@@ -26,9 +27,7 @@ Additionally, there are some additional files you can modify to suit your needs.
 ## Start script
 
 ```
-
-sudo apt-get update && sudo apt-get install curl &&
-curl -sf -L https://raw.githubusercontent.com/ccpu/secure-linux/main/secure-linux.sh -o secure-linux.sh &&
-chmod +x secure-linux.sh && sudo ./secure-linux.sh && sudo rm secure-linux.sh
+sudo apt-get update && sudo apt-get install git -y && git clone https://github.com/ccpu/secure-linux.git &&
+cd ./secure-linux && sudo bash ./secure-linux.sh && sudo rm -r secure-linux
 
 ```
